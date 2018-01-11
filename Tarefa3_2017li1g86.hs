@@ -175,40 +175,11 @@ Just (Carro {posicao = (3.5,1.5), direcao = 0.0, velocidade = (1.0,0.0)})
 movimenta :: Tabuleiro -> Tempo -> Carro -> Maybe Carro
 movimenta m t carro@(Carro {posicao = (c,l), direcao = angulo, velocidade = (v1,v2)}) 
     | actualPos == Peca Lava 0 = Nothing 
+    | abs (altura actualPos - altura newPos) > 1 = Nothing
     | tipo actualPos == Curva Norte || tipo actualPos == Curva Sul || tipo actualPos == Curva Este || tipo actualPos == Curva Oeste = curva newPos Carro{posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}  
-    | altura actualPos - altura newPos > 0 = subida t (actualPos) (newPos) carro 
-    | altura actualPos - altura newPos < 0 = Just Carro {posicao = newPonto, direcao = 180 - angulo, velocidade = (v1,v2)}
     | otherwise = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
     where newPonto = nextPosition carro t
           newPos = posi m (nextPosition carro t)
           actualPos = posi m newPonto
 
-{- | 
-
-A função 'subida' compara as alturas quando perante situações que envolvam rampas.
-
--}
-subida :: Tempo -> Peca -> Peca -> Carro -> Maybe Carro 
-subida t (Peca tipo altura) (Peca tipo2 altura2) carro@(Carro {posicao = (c,l), direcao = angulo, velocidade = (v1,v2)})
-    | tipo == tipo2 && (altura + 1) == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)} -- duas subidas
-    | tipo == tipo2 && altura == (altura2 + 1) = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)} -- duas descidas
-    | tipo == tipo2 && altura == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo == Rampa Norte && altura == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo == Rampa Norte && altura + 1 == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo == Rampa Sul && altura == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo == Rampa Sul && altura + 1 == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo == Rampa Este && altura == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo == Rampa Este && altura + 1 == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo == Rampa Oeste && altura == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo == Rampa Oeste && altura + 1 == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo2 == Rampa Norte && altura + 1 == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo2 == Rampa Norte && altura == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo2 == Rampa Sul && altura + 1 == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo2 == Rampa Sul && altura == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo2 == Rampa Este && altura == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo2 == Rampa Este && altura + 1 == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo2 == Rampa Oeste && altura == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | tipo2 == Rampa Oeste && altura + 1 == altura2 = Just Carro {posicao = newPonto, direcao = angulo, velocidade = (v1,v2)}
-    | otherwise = Nothing
-    where newPonto = nextPosition carro t
       
